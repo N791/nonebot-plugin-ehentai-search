@@ -30,6 +30,9 @@ __plugin_meta__ = PluginMetadata(
     name="nonebot-plugin-ehentai-search",
     description="致力于ehentai网站的搜索",
     usage="输入ehbz_help获取帮助",
+    type="application",
+    homepage="https://github.com/N791/nonebot-plugin-ehentai-search",
+    supported_adapters={"~onebot.v11"}
 )
 
 # 创建Chrome参数对象
