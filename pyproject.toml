@@ -12,6 +12,7 @@ license = {text = "MIT"}
 [tool.poetry.dependencies]
 python = "^3.8"
 nonebot2 = "^2.0.0"
+nonebot-adapter-onebot = "^2.4.4"
 Pillow = "^9.4.0"
 beautifulsoup4 = "^4.11.2"
 loguru = "^0.6.0"
