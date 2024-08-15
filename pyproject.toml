@@ -1,0 +1,23 @@
+[project]
+name = "nonebot-plugin-ehentai-search"
+version = "0.1.0"
+authors = [
+  { name="N791", email="a15345506127@gmail.com" },
+]
+description = "一个基于Nonebot2和OnebotV11的ehentai搜索"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+
+[tool.poetry.dependencies]
+python = "^3.8"
+nonebot2 = "^2.0.0"
+Pillow = "^9.4.0"
+beautifulsoup4 = "^4.11.2"
+loguru = "^0.6.0"
+selenium = "^4.8.2"
+requests = "^2.28.2"
+
+[project.urls]
+"Homepage" = "https://github.com/N791/nonebot-plugin-ehentai-search"
+"Bug Tracker" = "https://github.com/N791/nonebot-plugin-ehentai-search/issues"
