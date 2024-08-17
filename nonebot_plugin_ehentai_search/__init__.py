@@ -1,4 +1,4 @@
-from nonebot import get_driver, on_command, on_regex
+from nonebot import get_driver, on_command, on_regex, logger
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata 
 from nonebot.matcher import Matcher
@@ -20,7 +20,6 @@ from PIL import Image
 from io import BytesIO
 from re import I
 from typing import Tuple
-from loguru import logger
 
 from .metadata import metadata
 
