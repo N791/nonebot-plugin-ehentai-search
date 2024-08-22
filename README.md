@@ -10,7 +10,6 @@
 
 _✨ NoneBot ehentai search ✨_
 
-
 <a href="./LICENSE">
     <img src="https://img.shields.io/github/license/N791/nonebot-plugin-ehentai-search" alt="license">
 </a>
@@ -81,6 +80,8 @@ _✨ NoneBot ehentai search ✨_
 > [!IMPORTANT]
 >当前只支持群聊内使用
 
+## ⭐免责声明
 
+1.一切代码仅供研究学习，请勿用于非法用途。
 
-
+2.使用中造成的一切后果，本人概不负责。

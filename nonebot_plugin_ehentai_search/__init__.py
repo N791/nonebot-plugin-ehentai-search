@@ -1,4 +1,10 @@
-from nonebot import get_driver, on_command, on_regex, logger
+from nonebot import (
+    get_driver,
+    on_command, 
+    on_regex, 
+    get_plugin_config, 
+    logger,
+)
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata 
 from nonebot.matcher import Matcher
@@ -22,6 +28,7 @@ from re import I
 from typing import Tuple
 
 from .metadata import metadata
+from .config import Config
 
 
 __plugin_meta__ = PluginMetadata(
@@ -34,6 +41,7 @@ __plugin_meta__ = PluginMetadata(
 )
 
 driver = get_driver()
+config = get_plugin_config(Config)
 
 @driver.on_startup
 async def startup():
@@ -44,50 +52,27 @@ async def startup():
         user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
     )
 
-FCATS = {
-    "NULL":0,
-    "Doujinshi":1021,
-    "Manga":1019,
-    "Artist-CG":1015,
-    "Game-CG":1007,
-    "Western":511,
-    "Non-H":767,
-    "Image-Set":991,
-    "Cosplay":959,
-    "Asian-Porn":895,
-    "Misc":1022,
-}
-NEW_FCATS = {v:k for k,v in FCATS.items()}
-FCATS_LIST = [0,1021,1019,1015,1007,511,767,991,959,895,1022]
-f_cat_value = FCATS['NULL']
-f_cat_key = NEW_FCATS[f_cat_value]
+f_cat_value = config.FCATS['NULL']
+f_cat_key = config.NEW_FCATS[0]
 success_type = True
 limit_num = 5
-search_regex: str = r"^(ehbz)\s?(\d+)?\s?(.*)?"
-
 
 ehbz_help = on_command("ehbz_help",block=True,priority=10)
 ehbz_search = on_command("ehbz_search",block=True,priority=20)
-ehbz_regex = on_regex(search_regex,block=True,priority=30,flags=I)
+ehbz_regex = on_regex(config.search_regex,block=True,priority=30,flags=I)
 ehbz_num = on_command("ehbz_num",block=True,priority=10,permission=SUPERUSER)
 ehbz_select = on_command("ehbz_select",block=True,priority=10,permission=SUPERUSER)
 ehbz_status = on_command("ehbz_status",block=True,priority=10)
 
-
-def get_key (value):
-    global FCATS
-    return [k for k, v in FCATS.items() if v == value]
-
-
 @ehbz_help.handle()
 async def get_help():
     help_str = ("ehentai搜索器帮助:\n"
-               +"1.ehbz_search+关键词  在ehentai中搜索关键词内容\n"
-               +"2.ehbz_status  获取当前设置的状态\n"
-               +"3.ehbz_num  (管理员)设置每次搜索返回的条数(默认5条)\n"
-               +"4.ehbz_select  (管理员)设置搜索的类型(默认全部)\n"
-               +"5.ehbz+(数字)+关键词  指定类型和关键词进行搜索任务\n"
-               +"注:搜索技巧请看https://ehwiki.org/wiki/Gallery_Searching/Chinese")
+               +"1.ehbz+(数字)+关键词  指定类型(数字)和关键词进行搜索任务\n"
+               +"2.ehbz_search+关键词  在ehentai中搜索关键词内容(使用全局搜索类型)\n"
+               +"3.ehbz_status  获取当前设置的状态\n"
+               +"4.ehbz_num  (管理员)设置每次搜索返回的条数(默认5条, 最高12条)\n"
+               +"5.ehbz_select  (管理员)设置全局搜索类型(默认NULL类型)\n"
+               +"注:搜索方式参考 https://ehwiki.org/wiki/Gallery_Searching/Chinese 中的内容")
     await ehbz_help.finish(help_str)
 
 @ehbz_num.handle()
@@ -126,12 +111,12 @@ async def send_select():
 
 @ehbz_select.got("keymod",prompt="请输入数字以切换类型")
 async def set_mod(keymod: str = ArgPlainText()):
-    global f_cat_value,f_cat_key,NEW_FCATS,FCATS_LIST
+    global f_cat_value,f_cat_key
     setmod = int(keymod)
     if(setmod<0|setmod>10):
          await ehbz_select.finish("输入错误，请重新设置")
-    f_cat_value = FCATS_LIST[setmod]
-    f_cat_key = NEW_FCATS[f_cat_value]
+    f_cat_value = config.FCATS_LIST[setmod]
+    f_cat_key = config.NEW_FCATS[f_cat_value]
     await ehbz_select.finish(f"设置成功，当前搜索类型为{f_cat_key}")
     
 @ehbz_status.handle()
@@ -154,7 +139,7 @@ async def get_ehbz_status():
     
 @ehbz_regex.handle()
 async def search_key(bot: Bot, matcher: Matcher, event: GroupMessageEvent,args: Tuple = RegexGroup()):
-    global FCATS_LIST,success_type
+    global success_type
     num = args[1]
     key = args[2]
     if success_type == False:
@@ -173,9 +158,9 @@ async def search_key(bot: Bot, matcher: Matcher, event: GroupMessageEvent,args: 
         keymod = int(num)
         if(keymod < 0 | keymod > 10):
             await ehbz_select.finish("类型输入错误，请重新设置")
-        cat_value = FCATS_LIST[keymod]
+        cat_value = config.FCATS_LIST[keymod]
         resp_str = f"https://e-hentai.org/?f_cats={cat_value}&f_search={resp_key}"
-    await search(bot,matcher,event,resp_str)
+    await search(bot,matcher,event,resp_str) #执行搜索任务
     success_type = True
         
     
